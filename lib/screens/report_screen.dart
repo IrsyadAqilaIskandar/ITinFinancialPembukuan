@@ -3,6 +3,7 @@ import '../db/database_helper.dart';
 import '../models/transaction_model.dart';
 import '../utils/formatters.dart';
 import '../utils/report_exporter.dart';
+import '../widgets/chart_widget.dart';
 
 enum ReportPeriod { weekly, monthly }
 
@@ -15,10 +16,7 @@ class ReportScreen extends StatefulWidget {
 
 class _ReportScreenState extends State<ReportScreen> {
   ReportPeriod _period = ReportPeriod.weekly;
-
-  // Index pergeseran periode: 0 = periode saat ini, -1 = periode sebelumnya, dst.
   int _offset = 0;
-
   bool _loading = true;
   bool _exporting = false;
   List<TransactionModel> _txs = [];
@@ -35,13 +33,10 @@ class _ReportScreenState extends State<ReportScreen> {
     _load();
   }
 
-  /// Menghitung rentang tanggal (awal & akhir) untuk periode yang dipilih,
-  /// digeser sebanyak [_offset] periode dari sekarang.
   ({DateTime start, DateTime end, String label}) _resolveRange() {
     final now = DateTime.now();
 
     if (_period == ReportPeriod.weekly) {
-      // Minggu dimulai hari Senin
       final currentWeekStart = now.subtract(Duration(days: now.weekday - 1));
       final start = DateTime(currentWeekStart.year, currentWeekStart.month,
               currentWeekStart.day)
@@ -133,7 +128,6 @@ class _ReportScreenState extends State<ReportScreen> {
     }
   }
 
-  /// Total per kategori, dipakai untuk breakdown pengeluaran/pemasukan.
   Map<String, double> _totalsByCategory(TransactionType type) {
     final Map<String, double> totals = {};
     for (final tx in _txs.where((t) => t.type == type)) {
@@ -167,7 +161,6 @@ class _ReportScreenState extends State<ReportScreen> {
           ),
         ),
 
-        // Navigasi periode (sebelumnya / berikutnya)
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Row(
@@ -191,7 +184,6 @@ class _ReportScreenState extends State<ReportScreen> {
 
         const SizedBox(height: 12),
 
-        // Tombol download laporan
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
@@ -230,7 +222,19 @@ class _ReportScreenState extends State<ReportScreen> {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                // Ringkasan total
+                Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: IncomeExpenseChart(
+                      totalIncome: totalIncome,
+                      totalExpense: totalExpense,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),

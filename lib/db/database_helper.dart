@@ -91,4 +91,22 @@ class DatabaseHelper {
     }
     return balance;
   }
+
+  // ---------- BACKUP & RESTORE HELPERS ---------- 
+  
+  Future<void> clearAllTransactions() async {
+    final db = await database;
+    await db.delete('transactions');
+  }
+
+  Future<void> insertBatchTransactions(List<TransactionModel> transactions) async {
+    final db = await database;
+    
+    await db.transaction((txn) async {
+      for (var tx in transactions) {
+        final map = tx.toMap()..remove('id'); 
+        await txn.insert('transactions', map);
+      }
+    });
+  }
 }

@@ -6,6 +6,7 @@ import '../widgets/transaction_tile.dart';
 import 'add_edit_transaction_screen.dart';
 import 'history_screen.dart';
 import 'report_screen.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,13 +17,34 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _tabIndex = 0;
+  Key _refreshKey = UniqueKey(); 
+
+  void _refresh() {
+    setState(() {
+      _refreshKey = UniqueKey();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final titles = ['Dashboard', 'Riwayat', 'Laporan'];
 
     return Scaffold(
-      appBar: AppBar(title: Text(titles[_tabIndex])),
+      appBar: AppBar(
+        title: Text(titles[_tabIndex]),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              );
+              _refresh();
+            },
+          ),
+        ],
+      ),
       body: _buildBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -31,8 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
             MaterialPageRoute(builder: (_) => const AddEditTransactionScreen()),
           );
           if (changed == true) {
-            // Trigger rebuild supaya dashboard & tab lain refresh datanya
-            setState(() {});
+            _refresh(); 
           }
         },
         child: const Icon(Icons.add),
@@ -49,25 +70,22 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Sengaja TIDAK pakai IndexedStack: setiap kali pindah tab, widget tab
-  /// tujuan dibuat baru (bukan disimpan di background), jadi datanya selalu
-  /// diambil ulang dari database dan tidak ada risiko data basi/stale
-  /// (ini yang menyebabkan Riwayat sebelumnya tidak menampilkan transaksi baru).
   Widget _buildBody() {
     switch (_tabIndex) {
       case 0:
-        return _DashboardTab();
+        return _DashboardTab(key: _refreshKey);
       case 1:
-        return HistoryScreen();
+        return HistoryScreen(key: _refreshKey);
       case 2:
-        return ReportScreen();
+        return ReportScreen(key: _refreshKey);
       default:
         return const SizedBox.shrink();
     }
   }
 }
+
 class _DashboardTab extends StatefulWidget {
-  const _DashboardTab();
+  const _DashboardTab({super.key});
 
   @override
   State<_DashboardTab> createState() => _DashboardTabState();
@@ -83,12 +101,6 @@ class _DashboardTabState extends State<_DashboardTab> {
   @override
   void initState() {
     super.initState();
-    _load();
-  }
-
-  @override
-  void didUpdateWidget(covariant _DashboardTab oldWidget) {
-    super.didUpdateWidget(oldWidget);
     _load();
   }
 
@@ -132,7 +144,6 @@ class _DashboardTabState extends State<_DashboardTab> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Kartu saldo berjalan
           Card(
             color: Theme.of(context).colorScheme.primaryContainer,
             child: Padding(
@@ -151,8 +162,6 @@ class _DashboardTabState extends State<_DashboardTab> {
             ),
           ),
           const SizedBox(height: 16),
-
-          // Ringkasan bulan ini
           Row(
             children: [
               Expanded(
@@ -175,10 +184,8 @@ class _DashboardTabState extends State<_DashboardTab> {
             ],
           ),
           const SizedBox(height: 24),
-
           Text('Transaksi Terbaru', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
-
           if (_recent.isEmpty)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 24),

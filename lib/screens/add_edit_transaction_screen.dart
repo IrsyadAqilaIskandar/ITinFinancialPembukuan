@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import '../db/database_helper.dart';
 import '../models/transaction_model.dart';
 import '../utils/formatters.dart';
 
-/// Layar ini dipakai untuk 2 keperluan: TAMBAH transaksi baru
-/// dan EDIT transaksi lama. Kalau [existingTransaction] diisi,
-/// berarti mode edit.
 class AddEditTransactionScreen extends StatefulWidget {
   final TransactionModel? existingTransaction;
 
@@ -33,7 +32,8 @@ class _AddEditTransactionScreenState extends State<AddEditTransactionScreen> {
 
     if (_isEditing) {
       final tx = widget.existingTransaction!;
-      _amountController.text = tx.amount.toStringAsFixed(0);
+      final formatter = NumberFormat.decimalPattern('id_ID');
+      _amountController.text = formatter.format(tx.amount);
       _noteController.text = tx.note;
       _type = tx.type;
       _category = tx.category;
@@ -51,7 +51,6 @@ class _AddEditTransactionScreenState extends State<AddEditTransactionScreen> {
   void _onTypeChanged(TransactionType newType) {
     setState(() {
       _type = newType;
-      // reset kategori ke default kategori jenis baru
       _category = TransactionCategories.forType(_type).first;
     });
   }
@@ -71,7 +70,8 @@ class _AddEditTransactionScreenState extends State<AddEditTransactionScreen> {
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final amount = double.parse(_amountController.text.replaceAll(',', '.'));
+    final cleanValue = _amountController.text.replaceAll('.', '');
+    final amount = double.parse(cleanValue);
 
     final tx = TransactionModel(
       id: widget.existingTransaction?.id,
@@ -105,7 +105,6 @@ class _AddEditTransactionScreenState extends State<AddEditTransactionScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // Pilihan jenis: Pemasukan / Pengeluaran
             SegmentedButton<TransactionType>(
               segments: const [
                 ButtonSegment(
@@ -124,10 +123,13 @@ class _AddEditTransactionScreenState extends State<AddEditTransactionScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Nominal
             TextFormField(
               controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                CurrencyInputFormatter(),
+              ],
               decoration: const InputDecoration(
                 labelText: 'Nominal (Rp)',
                 border: OutlineInputBorder(),
@@ -137,7 +139,8 @@ class _AddEditTransactionScreenState extends State<AddEditTransactionScreen> {
                 if (value == null || value.trim().isEmpty) {
                   return 'Nominal wajib diisi';
                 }
-                final parsed = double.tryParse(value.replaceAll(',', '.'));
+                final cleanValue = value.replaceAll('.', '');
+                final parsed = double.tryParse(cleanValue);
                 if (parsed == null || parsed <= 0) {
                   return 'Nominal tidak valid';
                 }
@@ -146,7 +149,6 @@ class _AddEditTransactionScreenState extends State<AddEditTransactionScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Kategori
             DropdownButtonFormField<String>(
               value: categories.contains(_category) ? _category : categories.first,
               decoration: const InputDecoration(
@@ -162,7 +164,6 @@ class _AddEditTransactionScreenState extends State<AddEditTransactionScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Tanggal
             InkWell(
               onTap: _pickDate,
               child: InputDecorator(
@@ -176,7 +177,6 @@ class _AddEditTransactionScreenState extends State<AddEditTransactionScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Catatan (opsional)
             TextFormField(
               controller: _noteController,
               decoration: const InputDecoration(

@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 final _currencyFormatter = NumberFormat.currency(
@@ -19,4 +20,30 @@ String formatDate(DateTime date) {
 
 String formatDateFull(DateTime date) {
   return _dateFormatterFull.format(date);
+}
+
+class CurrencyInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) {
+      return newValue.copyWith(text: '');
+    }
+
+    String cleanText = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
+    if (cleanText.isEmpty) {
+      return newValue.copyWith(text: '');
+    }
+
+    double value = double.parse(cleanText);
+    final formatter = NumberFormat.decimalPattern('id_ID');
+    String newText = formatter.format(value);
+
+    return TextEditingValue(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
+  }
 }
