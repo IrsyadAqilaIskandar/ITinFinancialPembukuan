@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../db/database_helper.dart';
 import '../utils/backup_helper.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -12,6 +13,38 @@ class SettingsScreen extends StatelessWidget {
         behavior: SnackBarBehavior.floating,
       ),
     );
+  }
+
+  Future<void> _confirmReset(BuildContext context) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Hapus Semua Data?'),
+        content: const Text(
+          'Semua data transaksi akan dihapus permanen dan tidak bisa dikembalikan. '
+          'Pastikan Anda sudah mencadangkan data jika diperlukan.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Hapus Permanen'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      // Menggunakan fungsi clearAllTransactions() yang sudah ada di database_helper.dart
+      await DatabaseHelper.instance.clearAllTransactions();
+      if (context.mounted) {
+        _showSnackBar(context, 'Semua data berhasil dihapus.', isError: false);
+      }
+    }
   }
 
   @override
@@ -43,7 +76,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.restore, color: Colors.red),
+            leading: const Icon(Icons.restore, color: Colors.orange),
             title: const Text('Pulihkan Data (Restore)'),
             subtitle: const Text('Ambil data dari file backup (.json)'),
             onTap: () {
@@ -75,6 +108,22 @@ class SettingsScreen extends StatelessWidget {
                 ),
               );
             },
+          ),
+          const Divider(),
+          const SizedBox(height: 12),
+          const Text(
+            'Zona Bahaya',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red),
+          ),
+          const SizedBox(height: 10),
+          ListTile(
+            leading: const Icon(Icons.delete_forever, color: Colors.red),
+            title: const Text(
+              'Reset / Hapus Semua Data',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+            subtitle: const Text('Hapus seluruh data transaksi secara permanen'),
+            onTap: () => _confirmReset(context),
           ),
         ],
       ),

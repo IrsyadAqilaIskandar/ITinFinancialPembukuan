@@ -17,7 +17,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _tabIndex = 0;
-  Key _refreshKey = UniqueKey(); 
+  Key _refreshKey = UniqueKey();
+  Offset? _fabPosition; 
 
   void _refresh() {
     setState(() {
@@ -45,18 +46,48 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: _buildBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final changed = await Navigator.push<bool>(
-            context,
-            MaterialPageRoute(builder: (_) => const AddEditTransactionScreen()),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final defaultX = constraints.maxWidth - 72.0;
+          final defaultY = constraints.maxHeight - 80.0;
+
+          return Stack(
+            fit: StackFit.expand, 
+            children: [
+              _buildBody(),
+              
+              Positioned(
+                left: _fabPosition?.dx ?? defaultX,
+                top: _fabPosition?.dy ?? defaultY,
+                child: GestureDetector(
+                  onPanUpdate: (details) {
+                    setState(() {
+                      double newX = (_fabPosition?.dx ?? defaultX) + details.delta.dx;
+                      double newY = (_fabPosition?.dy ?? defaultY) + details.delta.dy;
+
+                      newX = newX.clamp(16.0, constraints.maxWidth - 72.0);
+                      newY = newY.clamp(16.0, constraints.maxHeight - 72.0);
+
+                      _fabPosition = Offset(newX, newY);
+                    });
+                  },
+                  child: FloatingActionButton(
+                    onPressed: () async {
+                      final changed = await Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(builder: (_) => const AddEditTransactionScreen()),
+                      );
+                      if (changed == true) {
+                        _refresh();
+                      }
+                    },
+                    child: const Icon(Icons.add),
+                  ),
+                ),
+              ),
+            ],
           );
-          if (changed == true) {
-            _refresh(); 
-          }
         },
-        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tabIndex,
