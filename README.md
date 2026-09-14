@@ -9,13 +9,13 @@ internet atau backend.
 
 * **Input Pemasukan & Pengeluaran**: Pencatatan transaksi lengkap dengan nominal, kategori, tanggal, dan catatan.
 * **Kategori Transaksi**: Pengelompokan dinamis (Penjualan, Bahan Baku, Operasional, Gaji, dll — dapat disesuaikan di `lib/models/transaction_model.dart`).
-* **Edit & Hapus Transaksi**: Manajemen transaksi yang fleksibel (*swipe* untuk hapus, *tap* untuk edit).
-* **Auto-Reload Data Instan**: Tampilan Dashboard, Riwayat, dan Laporan langsung diperbarui secara otomatis setelah simpan transaksi.
+* **Edit & ubah Transaksi**: Manajemen transaksi yang fleksibel (*swipe* untuk hapus, *tap* untuk edit).
 * **Dashboard Keuangan**: Menampilkan saldo berjalan serta ringkasan pemasukan dan pengeluaran bulan ini.
 * **Riwayat Transaksi**: Tampilan riwayat harian yang dikelompokkan rapi berdasarkan tanggal.
 * **Laporan Mingguan & Bulanan**: Grafik visualisasi, navigasi periode, dan rincian transaksi per kategori.
 * **Ekspor Laporan (PDF & Excel/CSV)**: Cetak atau bagikan laporan keuangan secara langsung lewat *share sheet* HP (Save to Files, WhatsApp, Email, dll).
 * **Cadangkan & Pulihkan Data (Backup & Restore)**: Fitur ekspor dan impor seluruh data transaksi menggunakan file `.json` untuk keamanan data.
+* **Reset Data (Zona Bahaya)**: Hapus seluruh data transaksi dari database secara permanen melalui Pengaturan, dilengkapi dengan konfirmasi dialog ganda.
 
 ## Struktur Project
 
@@ -23,15 +23,15 @@ internet atau backend.
 lib/
 ├── main.dart                          # Entry point aplikasi
 ├── db/
-│   └── database_helper.dart           # Operasi CRUD SQLite
+│   └── database_helper.dart           # Operasi CRUD SQLite & reset data
 ├── models/
 │   └── transaction_model.dart         # Model data transaksi & kategori
 ├── screens/
-│   ├── home_screen.dart               # Dashboard & navigasi utama
+│   ├── home_screen.dart               # Dashboard, navigasi utama & draggable FAB
 │   ├── add_edit_transaction_screen.dart# Form tambah & edit transaksi
 │   ├── history_screen.dart            # Riwayat transaksi
 │   ├── report_screen.dart             # Laporan keuangan mingguan/bulanan
-│   └── settings_screen.dart           # Pengaturan, backup & restore
+│   └── settings_screen.dart           # Pengaturan, backup, restore & reset data
 ├── utils/
 │   ├── backup_helper.dart             # Helper ekspor & impor file .json
 │   ├── formatters.dart                # Format Rupiah, tanggal & input nominal
