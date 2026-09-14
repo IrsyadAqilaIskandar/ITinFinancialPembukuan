@@ -23,20 +23,24 @@ internet atau backend.
 
 ```
 lib/
-├── main.dart                          # Entry point
-├── models/
-│   └── transaction_model.dart         # Model data transaksi + kategori
+├── main.dart                          # Entry point aplikasi
 ├── db/
-│   └── database_helper.dart           # CRUD SQLite
+│   └── database_helper.dart           # Operasi CRUD SQLite
+├── models/
+│   └── transaction_model.dart         # Model data transaksi & kategori
 ├── screens/
-│   ├── home_screen.dart               # Dashboard + bottom navigation
-│   ├── add_edit_transaction_screen.dart
-│   ├── history_screen.dart            # Riwayat semua transaksi
-│   └── report_screen.dart             # Laporan mingguan/bulanan
-├── widgets/
-│   └── transaction_tile.dart          # Kartu item transaksi
-└── utils/
-    └── formatters.dart                # Format Rupiah & tanggal (id_ID)
+│   ├── home_screen.dart               # Dashboard & navigasi utama
+│   ├── add_edit_transaction_screen.dart# Form tambah & edit transaksi
+│   ├── history_screen.dart            # Riwayat transaksi
+│   ├── report_screen.dart             # Laporan keuangan mingguan/bulanan
+│   └── settings_screen.dart           # Pengaturan, backup & restore
+├── utils/
+│   ├── backup_helper.dart             # Helper ekspor & impor file .json
+│   ├── formatters.dart                # Format Rupiah, tanggal & input nominal
+│   └── report_exporter.dart           # Helper ekspor laporan PDF & CSV
+└── widgets/
+    ├── chart_widget.dart              # Grafik visualisasi laporan
+    └── transaction_tile.dart          # Widget kartu item transaksi
 ```
 
 ## Cara Menjalankan
