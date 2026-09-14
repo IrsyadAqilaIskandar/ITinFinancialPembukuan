@@ -7,17 +7,15 @@ internet atau backend.
 
 ## Fitur
 
-- Input pemasukan & pengeluaran (nominal, kategori, tanggal, catatan)
-- Kategori transaksi (Penjualan, Bahan Baku, Operasional, Gaji, dll — bisa
-  diedit di `lib/models/transaction_model.dart`)
-- Edit & hapus transaksi (swipe kiri untuk hapus, tap untuk edit)
-- Riwayat transaksi harian, dikelompokkan per tanggal
-- Saldo berjalan di halaman Dashboard
-- Laporan Mingguan & Bulanan dengan navigasi periode (sebelumnya/berikutnya)
-  dan rincian per kategori
-- **Download laporan** dalam format PDF atau Excel (CSV) dari halaman
-  Laporan — file dibuat lalu dibuka lewat share sheet HP, jadi user bisa
-  pilih "Save to files"/Download, atau langsung kirim ke WhatsApp/Email
+* **Input Pemasukan & Pengeluaran**: Pencatatan transaksi lengkap dengan nominal, kategori, tanggal, dan catatan.
+* **Kategori Transaksi**: Pengelompokan dinamis (Penjualan, Bahan Baku, Operasional, Gaji, dll — dapat disesuaikan di `lib/models/transaction_model.dart`).
+* **Edit & Hapus Transaksi**: Manajemen transaksi yang fleksibel (*swipe* untuk hapus, *tap* untuk edit).
+* **Auto-Reload Data Instan**: Tampilan Dashboard, Riwayat, dan Laporan langsung diperbarui secara otomatis setelah simpan transaksi.
+* **Dashboard Keuangan**: Menampilkan saldo berjalan serta ringkasan pemasukan dan pengeluaran bulan ini.
+* **Riwayat Transaksi**: Tampilan riwayat harian yang dikelompokkan rapi berdasarkan tanggal.
+* **Laporan Mingguan & Bulanan**: Grafik visualisasi, navigasi periode, dan rincian transaksi per kategori.
+* **Ekspor Laporan (PDF & Excel/CSV)**: Cetak atau bagikan laporan keuangan secara langsung lewat *share sheet* HP (Save to Files, WhatsApp, Email, dll).
+* **Cadangkan & Pulihkan Data (Backup & Restore)**: Fitur ekspor dan impor seluruh data transaksi menggunakan file `.json` untuk keamanan data.
 
 ## Struktur Project
 
