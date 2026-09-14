@@ -73,8 +73,4 @@ terinstall Flutter SDK:
 Fitur yang belum ada tapi mudah ditambahkan ke struktur ini:
 - Foto nota/struk per transaksi
 - Filter & pencarian transaksi
-- Export laporan ke PDF/Excel
-- Grafik (pie/bar chart) — package `fl_chart` sudah ditambahkan di
-  `pubspec.yaml` untuk ini
-- Backup/restore data ke cloud
 - Multi-usaha
